@@ -116,7 +116,7 @@ class OriginOperations():
             bot.failed("Failed to access data from Origin.", True)
 
 
-def filter_Origin(data:list) ->list:
+def filter_origin(data:list) ->list:
     bot.debug("System starts filtering data from Origin ...")
 
     formatted_data = []
@@ -131,21 +131,21 @@ def filter_Origin(data:list) ->list:
     bot.debug("Filtration of data has been completed")
     return formatted_data
 
-def filter_ITSM(data:list) ->list:
+def filter_itsm(data:list) ->list:
     bot.debug("System starts filtering data from 4me ...")    
-    filteredData = []
+    filtered_data = []
 
     for shop in data:
         id = shop.get("id", "")
         name = shop.get("name", "")
-        financialID = shop.get("financialID", "")
+        financial_id = shop.get("financialID", "")
         custom_fields = shop.get("custom_fields", "")
         if custom_fields:
             godziny_otwarcia = next((work_hours.get("value", "") for work_hours in custom_fields if work_hours.get("id") == "godziny_otwarcia"), None) 
 
-        filteredData.append(dict(id = id, name = name, financialID = financialID, godziny_otwarcia = godziny_otwarcia))
+        filtered_data.append(dict(id = id, name = name, financialID = financial_id, godziny_otwarcia = godziny_otwarcia))
     bot.debug("Filtration of data has been completed")
-    return filteredData
+    return filtered_data
 
 
 
@@ -157,11 +157,11 @@ def compare_loop(body, origin_data, itsm_data):
             origin_godziny_otwarcia = origin.get("godziny_otwarcia", "")
 
             for data in itsm_data:
-                ITSM_shopID = data.get("id", "")
+                ITSM_shop_id = data.get("id", "")
                 ITSM_shop_name = data.get("name", "")
                 if data.get("financialID", "") == origin_financialID:
                     if data.get("godziny_otwarcia", "") != origin_godziny_otwarcia:
-                        ITSM(token, user, 'QA').update_organization(ITSM_shopID, **body)
+                        ITSM(token, user, 'QA').update_organization(ITSM_shop_id, **body)
                         bot.debug(f"{ITSM_shop_name} opening hours updated.")
                     else:
                         bot.debug(f"{ITSM_shop_name} opening hours NOT updated.")
@@ -170,8 +170,8 @@ def compare_loop(body, origin_data, itsm_data):
 if __name__ == '__main__':
      
     user, token = bot.get_creds('ITSM')
-    origin_data=filter_Origin(OriginOperations.get_origin_data())
-    itsm_data=filter_ITSM(ITSM(token, user, 'QA').list_organizations(per_page=100, source='Origin', sourceID='Origin_Shop', fields='financialID, custom_fields'))
+    origin_data=filter_origin(OriginOperations.get_origin_data())
+    itsm_data=filter_itsm(ITSM(token, user, 'QA').list_organizations(per_page=100, source='Origin', sourceID='Origin_Shop', fields='financialID, custom_fields'))
     body = {
             "custom_fields": [
             {   
