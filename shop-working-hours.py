@@ -157,14 +157,14 @@ def compare_loop(body, origin_data, itsm_data):
             origin_godziny_otwarcia = origin.get("godziny_otwarcia", "")
 
             for data in itsm_data:
-                ITSM_shop_id = data.get("id", "")
-                ITSM_shop_name = data.get("name", "")
+                itsm_shop_id = data.get("id", "")
+                itsm_shop_name = data.get("name", "")
                 if data.get("financialID", "") == origin_financialID:
                     if data.get("godziny_otwarcia", "") != origin_godziny_otwarcia:
-                        ITSM(token, user, 'QA').update_organization(ITSM_shop_id, **body)
-                        bot.debug(f"{ITSM_shop_name} opening hours updated.")
+                        ITSM(token, user, 'QA').update_organization(itsm_shop_id, **body)
+                        bot.debug(f"{itsm_shop_name} opening hours updated.")
                     else:
-                        bot.debug(f"{ITSM_shop_name} opening hours NOT updated.")
+                        bot.debug(f"{itsm_shop_name} opening hours NOT updated.")
         bot.debug("System has finished compare the data")
 
 if __name__ == '__main__':
